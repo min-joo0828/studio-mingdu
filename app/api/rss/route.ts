@@ -61,13 +61,18 @@ function cleanDescription(text: string) {
 }
 
 function decodeHtmlEntities(str: string) {
-    if (!str) return str;
+    if (!str) return "";
 
-    // 브라우저 없이 Node 환경에서 DOMParser 대체
-    const txt = globalThis.document
-        ? document.createElement("textarea")
-        : new (require("jsdom").JSDOM)().window.document.createElement("textarea");
-
-    txt.innerHTML = str;
-    return txt.value;
+    return str
+        .replace(/&amp;/g, "&")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&quot;/g, '"')
+        .replace(/&apos;/g, "'")
+        .replace(/&lsquo;/g, "‘")
+        .replace(/&rsquo;/g, "’")
+        .replace(/&ldquo;/g, "“")
+        .replace(/&rdquo;/g, "”")
+        .replace(/&#39;/g, "'")  // 브런치에서 자주 나오는 HTML 엔티티
+        .replace(/&nbsp;/g, " ");
 }
