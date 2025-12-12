@@ -1,14 +1,15 @@
-// app/layout.tsx
 import "./globals.css";
+import "@/styles/theme.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import type { ReactNode } from "react";
 
 export const metadata = {
   title: "Studio Mingdu",
   description: "밍듀의 스튜디오 — 인스타툰, 글쓰기, 포트폴리오 프로젝트",
 };
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ko">
       <body className="min-h-screen flex flex-col bg-neutral-50 text-[#3E3632]">
