@@ -1,5 +1,4 @@
 import "./globals.css";
-import "@/styles/theme.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import type { ReactNode } from "react";
