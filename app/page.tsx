@@ -1,13 +1,38 @@
 import Section from "@/components/common/Section";
 import Container from "@/components/common/Container";
 import Card from "@/components/common/Card";
+import Link from "next/link";
+import { supabase } from "@/lib/supabase";
 
-export default function Home() {
+export default async function Home() {
+  /* =========================
+     1️⃣ Instatoon (Supabase)
+  ========================= */
+  const { data: instatoons } = await supabase
+    .from("instagram_toons")
+    .select("id, title, image_urls")
+    .eq("is_published", true)
+    .order("published_at", { ascending: false })
+    .limit(3);
+
+  /* =========================
+     2️⃣ Brunch Articles (/api/rss)
+  ========================= */
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/rss?limit=2`,
+    {
+      next: { revalidate: 3600 },
+    }
+  );
+
+  const data = await response.json();
+  const articles = (data.articles ?? []).slice(0, 2);
+
   return (
     <main>
       {/* 1. Hero Section */}
       <Section>
-        <Container className="py-20 text-center">
+        <Container className="py-5 text-center">
           <h1 className="text-4xl sm:text-5xl font-bold text-primary leading-snug">
             작가 밍듀의 작은 작업실
           </h1>
@@ -19,30 +44,48 @@ export default function Home() {
         </Container>
       </Section>
 
+      {/* 🌿 Hero → Content 전환 요소 */}
+      <div className="flex justify-center">
+        <span className="block w-12 h-px bg-stone-300" />
+      </div>
+
       {/* 2. InstaToon Preview */}
       <Section
         title="InstaToon"
         description="최근 작업한 인스타툰을 미리 만나보세요."
       >
         <Container className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Card>
-            <div className="h-40 bg-secondary rounded-lg mb-4"></div>
-            <h3 className="font-bold text-primary text-lg">인스타툰 예시 1</h3>
-            <p className="text-muted mt-1 text-sm">작업 미리보기 카드</p>
-          </Card>
+          {instatoons?.map((toon) => (
+            <Link
+              key={toon.id}
+              href={`/instatoons/${toon.id}`}
+              className="block"
+            >
+              <Card>
+                {toon.image_urls?.[0] && (
+                  <img
+                    src={toon.image_urls[0]}
+                    alt={toon.title}
+                    className="w-full aspect-[4/5] object-cover rounded-lg mb-4"
+                  />
+                )}
 
-          <Card>
-            <div className="h-40 bg-secondary rounded-lg mb-4"></div>
-            <h3 className="font-bold text-primary text-lg">인스타툰 예시 2</h3>
-            <p className="text-muted mt-1 text-sm">작업 미리보기 카드</p>
-          </Card>
-
-          <Card>
-            <div className="h-40 bg-secondary rounded-lg mb-4"></div>
-            <h3 className="font-bold text-primary text-lg">인스타툰 예시 3</h3>
-            <p className="text-muted mt-1 text-sm">작업 미리보기 카드</p>
-          </Card>
+                <h3 className="font-bold text-primary text-lg line-clamp-2">
+                  {toon.title}
+                </h3>
+              </Card>
+            </Link>
+          ))}
         </Container>
+
+        <div className="mt-8 text-center">
+          <Link
+            href="/instatoons"
+            className="text-sm text-muted hover:underline"
+          >
+            인스타툰 전체 보기 →
+          </Link>
+        </div>
       </Section>
 
       {/* 3. Brunch Articles */}
@@ -51,22 +94,56 @@ export default function Home() {
         description="브런치에 쌓인 글들을 한 곳에서."
       >
         <Container className="grid sm:grid-cols-2 gap-6">
-          <Card>
-            <h3 className="font-bold text-primary text-xl">글 제목 예시 1</h3>
-            <p className="text-muted mt-3 text-base leading-relaxed">
-              글 요약 부분이 들어갑니다. 밍듀의 감성이 담긴 따뜻한 에세이…
-            </p>
-            <p className="text-sm text-muted mt-4">2025.01.01</p>
-          </Card>
+          {articles.map((article: any, index: number) => (
+            <a
+              key={index}
+              href={article.link}
+              target="_blank"
+              className="block"
+            >
+              <Card className="h-full flex flex-col p-0 overflow-hidden">
+                {/* Thumbnail */}
+                <div className="h-40 w-full bg-secondary overflow-hidden">
+                  {article.thumbnail ? (
+                    <img
+                      src={article.thumbnail}
+                      alt={article.title}
+                      className="object-cover w-full h-full"
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-muted">
+                      이미지 없음
+                    </div>
+                  )}
+                </div>
 
-          <Card>
-            <h3 className="font-bold text-primary text-xl">글 제목 예시 2</h3>
-            <p className="text-muted mt-3 text-base leading-relaxed">
-              또 다른 글의 요약입니다. 브런치에서 연재 중인 이야기들…
-            </p>
-            <p className="text-sm text-muted mt-4">2025.01.10</p>
-          </Card>
+                {/* Content */}
+                <div className="p-5 flex flex-col flex-1">
+                  <h3 className="font-bold text-primary text-lg line-clamp-2">
+                    {article.title}
+                  </h3>
+
+                  <p className="text-muted mt-2 text-sm line-clamp-3">
+                    {article.description}
+                  </p>
+
+                  <p className="mt-auto text-xs text-muted">
+                    {article.date}
+                  </p>
+                </div>
+              </Card>
+            </a>
+          ))}
         </Container>
+
+        <div className="mt-8 text-center">
+          <Link
+            href="/articles"
+            className="text-sm text-muted hover:underline"
+          >
+            브런치 글 전체 보기 →
+          </Link>
+        </div>
       </Section>
 
       {/* 4. About Section */}

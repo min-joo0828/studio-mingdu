@@ -24,3 +24,15 @@ body {
   color: var(--color-primary);
   font-family: var(--font-sans);
 }
+
+/* 가로 스크롤바 숨기기 */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  /* IE */
+  scrollbar-width: none;
+  /* Firefox */
+}

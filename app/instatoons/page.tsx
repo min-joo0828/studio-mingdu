@@ -1,70 +1,53 @@
-// app/instatoon/page.tsx
+import { supabase } from "@/lib/supabase";
+import Link from "next/link";
 
-import Section from "@/components/common/Section";
-import Container from "@/components/common/Container";
-import Card from "@/components/common/Card";
+export default async function InstatoonsPage() {
+    const { data: toons, error } = await supabase
+        .from("instagram_toons")
+        .select("id, title, image_urls, description, published_at")
+        .order("published_at", { ascending: false });
 
-export default function InstaToonPage() {
-    // 아직 실제 데이터 없으니까 예시 데이터 준비
-    const dummyToons = [
-        {
-            title: "오늘도 워킹맘 모드",
-            description: "회사와 육아 사이에서 균형을 찾아가는 마리나의 하루.",
-            thumbnail: "", // 나중에 실제 이미지 경로 들어갈 예정
-            date: "2025.02.01",
-        },
-        {
-            title: "소피아의 깜찍한 질문",
-            description: "아이와의 대화를 통해 하루가 따뜻해지는 순간.",
-            thumbnail: "",
-            date: "2025.01.26",
-        },
-        {
-            title: "마리나의 퇴근 후 순간",
-            description: "잠시 숨 돌리는 엄마의 작은 휴식.",
-            thumbnail: "",
-            date: "2025.01.20",
-        },
-    ];
+    if (error) {
+        return <p>인스타툰을 불러오지 못했어요.</p>;
+    }
 
     return (
-        <main>
-            <Section
-                title="InstaToon"
-                description="따뜻한 감성으로 기록한 일상의 순간들입니다."
-            >
-                <Container className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                    {dummyToons.map((toon, index) => (
-                        <Card key={index} className="p-0 overflow-hidden">
-                            {/* Thumbnail 영역 */}
-                            <div className="w-full h-56 bg-secondary flex items-center justify-center overflow-hidden">
-                                {toon.thumbnail ? (
-                                    <img
-                                        src={toon.thumbnail}
-                                        alt={toon.title}
-                                        className="object-cover w-full h-full"
-                                    />
-                                ) : (
-                                    <span className="text-muted">이미지 준비중</span>
-                                )}
-                            </div>
+        <main className="px-4 py-8 sm:px-8 sm:py-12 max-w-5xl mx-auto">
+            <h1 className="text-2xl sm:text-3xl font-bold mb-8">
+                Instatoons
+            </h1>
 
-                            {/* Text 영역 */}
-                            <div className="p-5">
-                                <h2 className="text-xl font-bold text-primary line-clamp-2">
+            <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                {toons?.map((toon) => (
+                    <li
+                        key={toon.id}
+                        className="rounded-2xl bg-white overflow-hidden ring-1 ring-black/5 hover:shadow-lg transition"
+                    >
+                        <Link href={`/instatoons/${toon.id}`}>
+                            {toon.image_urls?.[0] && (
+                                <img
+                                    src={toon.image_urls[0]}
+                                    alt={toon.title}
+                                    className="w-full aspect-[4/5] object-cover"
+                                />
+                            )}
+
+                            <div className="p-4">
+                                <h2 className="font-semibold text-base mb-1">
                                     {toon.title}
                                 </h2>
 
-                                <p className="mt-2 text-muted text-sm line-clamp-3 leading-relaxed">
-                                    {toon.description}
-                                </p>
-
-                                <p className="mt-3 text-xs text-muted">{toon.date}</p>
+                                {toon.description && (
+                                    <p className="text-sm text-gray-600 line-clamp-2">
+                                        {toon.description}
+                                    </p>
+                                )}
                             </div>
-                        </Card>
-                    ))}
-                </Container>
-            </Section>
+                        </Link>
+                    </li>
+
+                ))}
+            </ul>
         </main>
     );
 }
