@@ -100,6 +100,9 @@ export default function EditInstatoonPage() {
     const [instagramUrl, setInstagramUrl] = useState("");
     const [isPublished, setIsPublished] = useState(false);
 
+    const [todayComment, setTodayComment] = useState("");
+    const [relatedArticleUrl, setRelatedArticleUrl] = useState("");
+
     /* 기존 데이터 불러오기 */
     useEffect(() => {
         const fetchInstatoon = async () => {
@@ -122,6 +125,9 @@ export default function EditInstatoonPage() {
             setTags((data.tags || []).join(", "));
             setInstagramUrl(data.instagram_url || "");
             setIsPublished(data.is_published);
+
+            setTodayComment(data.today_comment || "");
+            setRelatedArticleUrl(data.related_article_url || "");
 
             setLoading(false);
         };
@@ -203,6 +209,8 @@ export default function EditInstatoonPage() {
                     .map((t) => t.trim())
                     .filter(Boolean),
                 instagram_url: instagramUrl || null,
+                today_comment: todayComment || null,
+                related_article_url: relatedArticleUrl || null,
                 is_published: isPublished,
                 published_at: isPublished ? new Date().toISOString() : null,
             })
@@ -358,6 +366,50 @@ export default function EditInstatoonPage() {
                     value={tags}
                     onChange={(e) => setTags(e.target.value)}
                 />
+            </label>
+
+            {/* 오늘의 인스타툰 코멘트 */}
+            <label className="mb-6 block">
+                <span className="text-sm font-medium">
+                    오늘의 인스타툰 코멘트
+                </span>
+                <input
+                    className="mt-1 w-full rounded border p-2 text-sm"
+                    value={todayComment}
+                    onChange={(e) => setTodayComment(e.target.value)}
+                    placeholder="예) 오늘은 이 장면이 유독 마음에 남았어요."
+                />
+                <p className="mt-1 text-xs text-black/40">
+                    · 메인 페이지 ‘오늘의 인스타툰’에 노출됩니다.
+                </p>
+            </label>
+
+            {/* 인스타 URL */}
+            <label className="mb-6 block">
+                <span className="text-sm font-medium">
+                    Instagram URL
+                </span>
+                <input
+                    className="mt-1 w-full rounded border p-2"
+                    value={instagramUrl}
+                    onChange={(e) => setInstagramUrl(e.target.value)}
+                />
+            </label>
+
+            {/* 브런치 글 연결 */}
+            <label className="mb-6 block">
+                <span className="text-sm font-medium">
+                    연결된 브런치 글 URL
+                </span>
+                <input
+                    className="mt-1 w-full rounded border p-2 text-sm"
+                    value={relatedArticleUrl}
+                    onChange={(e) => setRelatedArticleUrl(e.target.value)}
+                    placeholder="https://brunch.co.kr/..."
+                />
+                <p className="mt-1 text-xs text-black/40">
+                    · 인스타툰 상세 하단에 ‘글로 더 읽기’ 링크가 생깁니다.
+                </p>
             </label>
 
             {/* 공개 여부 */}

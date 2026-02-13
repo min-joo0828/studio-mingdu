@@ -3,6 +3,27 @@ import Container from "@/components/common/Container";
 import Card from "@/components/common/Card";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import RecommendedTags from "@/components/instatoon/RecommendedTags";
+import TodayInstatoon from "@/components/instatoon/TodayInstatoon";
+import EntryGuide from "@/components/home/EntryGuide";
+
+import type { Metadata } from "next";
+
+export const generateMetadata = async (): Promise<Metadata> => {
+  return {
+    title: "작가 밍듀의 작은 작업실",
+    description:
+      "글, 인스타툰, 그리고 세계관을 만들어가는 공간. 흩어진 기록을 모아 나만의 세계를 만들어갑니다.",
+    openGraph: {
+      title: "Studio Mingdu",
+      description:
+        "글과 인스타툰으로 세계관을 만들어가는 작가 밍듀의 작업실",
+      url: "https://studio-mingdu.vercel.app",
+      siteName: "Studio Mingdu",
+      type: "website",
+    },
+  };
+};
 
 export default async function Home() {
   /* =========================
@@ -49,6 +70,8 @@ export default async function Home() {
         <span className="block w-12 h-px bg-stone-300" />
       </div>
 
+      <EntryGuide />
+
       {/* 2. InstaToon Preview */}
       <Section
         title="InstaToon"
@@ -88,6 +111,23 @@ export default async function Home() {
         </div>
       </Section>
 
+      {/* 🌿 오늘의 Instatoon */}
+      <Section>
+        <Container>
+          <TodayInstatoon />
+        </Container>
+      </Section>
+
+      {/* ⭐ Recommended Tags */}
+      <Section
+        title="추천 태그"
+        description="관심 있는 이야기부터 살펴보세요."
+      >
+        <Container>
+          <RecommendedTags />
+        </Container>
+      </Section>
+
       {/* 3. Brunch Articles */}
       <Section
         title="Brunch Articles"
@@ -99,6 +139,7 @@ export default async function Home() {
               key={index}
               href={article.link}
               target="_blank"
+              rel="noopener noreferrer"
               className="block"
             >
               <Card className="h-full flex flex-col p-0 overflow-hidden">

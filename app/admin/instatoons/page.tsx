@@ -11,6 +11,8 @@ type Instatoon = {
     tags: string[];
     is_published: boolean;
     created_at: string;
+    today_comment?: string | null;
+    related_article_url?: string | null;
 };
 
 function getStoragePathFromUrl(url: string) {
@@ -31,7 +33,7 @@ export default function AdminInstatoonsPage() {
         const { data, error } = await supabase
             .from("instagram_toons")
             .select(
-                "id, title, image_urls, tags, is_published, created_at"
+                "id, title, image_urls, tags, is_published, created_at, today_comment, related_article_url"
             )
             .order("created_at", { ascending: false });
 
@@ -188,6 +190,18 @@ export default function AdminInstatoonsPage() {
                                     ) : (
                                         <span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-500">
                                             비공개
+                                        </span>
+                                    )}
+
+                                    {!!item.today_comment?.trim() && (
+                                        <span className="rounded bg-blue-100 px-2 py-0.5 text-xs text-blue-700">
+                                            오늘
+                                        </span>
+                                    )}
+
+                                    {!!item.related_article_url?.trim() && (
+                                        <span className="rounded bg-purple-100 px-2 py-0.5 text-xs text-purple-700">
+                                            글 연결
                                         </span>
                                     )}
                                 </div>
